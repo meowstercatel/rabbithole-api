@@ -1,8 +1,80 @@
-class rabbitHoleClient {
-  constructor(accessToken) {
-    this.accessToken = accessToken;
+interface updateUserProfileInterface {
+  accessToken: string,
+  profile: {
+    name: string,
+    assistantName: string,
+    assistantVoice: string,
+    email: string,
+    locations: Array<LocationInterface>
+    dietaryPreferences: {
+      restrictions: string,
+      preferences: string
+    }
   }
-  async rabbitGetRequest(url) {
+}
+interface LocationInterface {
+  name: string,
+  address: {
+    street: string,
+    street2: string, //optional
+    country: string,
+    city: string,
+    state: string,
+    zip: string
+  }
+}
+interface addOrUpdateLocationInterface {
+  accessToken: string,
+  location: LocationInterface,
+  deleteLocationName: string
+}
+interface createLessonInterface {
+  accessToken: string,
+  lesson: {
+    domain: string,
+    name: string,
+    description: string
+  }
+}
+interface deleteConnectionStorageInterface {
+  accessToken: string,
+  appId: string
+}
+interface deleteLessonInterface {
+  accessToken: string,
+  lessonId: string
+}
+interface devResetUserInterface {
+  accessToken: string
+}
+interface setDeviceLostInterface {
+  accessToken: string,
+  deviceLost: boolean,
+  message: string //optional
+}
+interface updateJournalEntryInterface {
+  accessToken: string,
+  entryId: string,
+  deleteEntry: boolean, //optional
+  newTextContent: string, //optional and currently doesn't work
+}
+interface updateLessonInterface {
+  accessToken: string,
+  lessonId: string,
+  lesson: {
+    name: string, //optional
+    description: string //optional
+  }
+}
+
+//@ts-ignore
+class rabbitHoleClient {
+  accessToken: string;
+  constructor(accessToken: string) {
+    this.accessToken = accessToken;
+  }  
+
+  async rabbitGetRequest(url: string) {
     return await fetch(url, {
       "headers": {
         "accept": "*/*",
@@ -23,7 +95,7 @@ class rabbitHoleClient {
       "method": "GET"
     });
   }
-  async rabbitPostRequest(url, payload) {
+  async rabbitPostRequest(url: string, payload: object) {
     return await fetch(url, {
       "headers": {
         "accept": "*/*",
@@ -58,12 +130,12 @@ class rabbitHoleClient {
   async fetchLesson(lessonId) {
     return await this.rabbitGetRequest(`https://hole.rabbit.tech/apis/fetchLesson?accessToken=${this.accessToken}&lessonId=${lessonId}`);
   }
-  async fetchMyLessons() {
-    return await this.rabbitGetRequest(`https://hole.rabbit.tech/apis/fetchMyLessons?accessToken=${this.accessToken}`);
+  async fetchLessons() {
+    return await this.rabbitGetRequest(`https://hole.rabbit.tech/apis/fetchLessons?accessToken=${this.accessToken}`);
   }
-  async fetchMySessions() {
+  async fetchUserLessons() {
     //might fill with `fetchLessons` but I'm not sure if that's different
-    return await this.rabbitGetRequest(`https://hole.rabbit.tech/apis/fetchMySessions?accessToken=${this.accessToken}`);
+    return await this.rabbitGetRequest(`https://hole.rabbit.tech/apis/fetchUserLessons?accessToken=${this.accessToken}`);
   }
   async fetchUserProfile() {
     //this only returns the username afaik lol
@@ -73,14 +145,14 @@ class rabbitHoleClient {
   /**
    * @param {string} deviceId optional
    */
-  async linkDevice(userId, linkingPasscode, deviceId) {
+  async linkDevice(userId: string, linkingPasscode: string, deviceId: string) {
     //might be a skill issue on my end but i got 403d when i tried values that totally won't work
     //deviceId is optional according to the API??
     return await this.rabbitGetRequest(`https://hole.rabbit.tech/apis/linkDevice?userId=${userId}&linkingPasscode=${linkingPasscode}&deviceId=${deviceId}`);
   }
 
   //PATCH
-  async updateUserProfile(payload) {
+  async updateUserProfile(payload: updateUserProfileInterface) {
     return await fetch("https://hole.rabbit.tech/apis/updateUserProfile", {
       "headers": {
         "accept": "*/*",
@@ -107,7 +179,7 @@ class rabbitHoleClient {
   async acceptSocialTerms() {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/acceptSocialTerms", {accessToken: this.accessToken});
   }
-  async addOrUpdateLocation(payload) {
+  async addOrUpdateLocation(payload: addOrUpdateLocationInterface) {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/addOrUpdateLocation", payload);
   }
   async bigRedButton() {
@@ -116,16 +188,16 @@ class rabbitHoleClient {
     //to use it since you can't :p
     return {};
   }
-  async createLesson(payload) {
+  async createLesson(payload: createLessonInterface) {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/createLesson", payload);
   }
-  async deleteConnectionStorage(payload) {
+  async deleteConnectionStorage(payload: deleteConnectionStorageInterface) {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/deleteConnectionStorage", payload);
   }
-  async deleteLesson(payload) {
+  async deleteLesson(payload: deleteLessonInterface) {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/deleteLesson", payload);
   }
-  async devResetUser(payload) {
+  async devResetUser(payload: devResetUserInterface) {
     //the payload only cosists of an `accessToken` but for the user's safety it isnt as easy to use lol
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/devResetUser", payload);
   }
@@ -142,7 +214,7 @@ class rabbitHoleClient {
   async fetchUserExpediaBookingEntries() {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/fetchUserExpediaBookingEntries", {accessToken: this.accessToken});
   }
-  async fetchUserExpediaBookingEntry(entryId) {
+  async fetchUserExpediaBookingEntry(entryId: string) {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/fetchUserExpediaBookingEntry", {accessToken: this.accessToken, entryId: entryId});
   }
   async fetchUserJournal() {
@@ -154,100 +226,118 @@ class rabbitHoleClient {
   async sendResetPasswordEmail() {
   return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/sendResetPasswordEmail", {accessToken: this.accessToken});
   }
-  async setDeviceLost(payload) {
+  async setDeviceLost(payload: setDeviceLostInterface) {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/setDeviceLost", payload);
   }
   async unlinkDevice() {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/unlinkDevice", {accessToken: this.accessToken});
   }
-  async updateJournalEntry(payload) {
+  async updateJournalEntry(payload: updateJournalEntryInterface) {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/updateJournalEntry", payload);
   }
-  async updateLesson(payload) {
+  async updateLesson(payload: updateLessonInterface) {
     return await this.rabbitPostRequest("https://hole.rabbit.tech/apis/updateLesson", payload);
   }
 }
 
-const holeClient = new rabbitHoleClient("accessToken");
-/*const updatedProfile = await holeClient.updateUserProfile({ 
-  accessToken: holeClient.accessToken, 
-  profile: { //everything here is optional 
-    name: "uh-number-one", 
-    assistantName: "assistantName", 
-    assistantVoice: "default", 
-    email: "yourmail@mail.com", 
-    locations: [{ //only street2 in a location is optional
-      name: "house", 
-      address: {
-        street: "some random street", 
-        street2: "another street", //optional
-        country: "Poland", 
-        city: "City", 
-        state: "Slaskie", 
-        zip: "03-100" } 
-    }], 
-    dietaryPreferences: {
-      restrictions: "pinaple", 
-      preferences: "chese" 
-    }
-  }
-  })
-await holeClient.addOrUpdateLocation({
-  accessToken: holeClient.accessToken, 
-  location: {
-    name: "house", 
-    address: {
-      street: "some random street TWO!", 
-      street2: "another street", //optional
-      country: "Poland", 
-      city: "City", 
-      state: "Slaskie", 
-      zip: "03-100"
-    }
-  },
-  deleteLocationName: "house"
-})
-await holeClient.createLesson({
-  accessToken: holeClient.accessToken,
+const holeclient = new rabbitHoleClient("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImJiOXBBQ2xqeG5JVVBIOHVIYnRZMSJ9.eyJlbWFpbCI6ImZyYW5la3J5bmtpZXdpY3ora3lzQGdtYWlsLmNvbSIsImFwcF9tZXRhZGF0YSI6e30sInJhYmJpdF9yb2xlcyI6W10sImlzcyI6Imh0dHBzOi8vbG9naW4ucmFiYml0LnRlY2gvIiwic3ViIjoiYXV0aDB8NjYzNjc0MDI0YzhmZGZjZDE1NTMyYTkyIiwiYXVkIjpbImh0dHBzOi8vcmFiYml0LnRlY2giLCJodHRwczovL3JhYmJpdC1wcm9kLnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3MjQ0MzY0MzgsImV4cCI6MTcyNDUyMjgzOCwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsImF6cCI6IlhhdUNFNUphTjlwbUNjREg4OTNJMjAxWm5MMzVsVHVyIn0.mehUB1QoLh2q80vEXAbeiIjCUk7hf1QzHfGxT0Qu5AUXbFLY_NlCHQmbi8BtVRkL6ZQR0wxm321TjGugRsiq_y7fcX6k2Z3qpqTZh5suYU1Ry1M2ZylCGdRCF1Vc8qkTFh_iFA-ZBP44UPqba2b_Xr2QbY0RCaU9Zuhn21YbwVWH--z-MJzK-z7lzHLNN0K1xgNECD-zKaVgyBgWIrZvoyCmi47DaU9qYUpzzYGIVGpZ72oYwG91TtQGsbPt6pINqmpZC5Z9oTUWZq-j5M-BeOxl4Owxpu8y5tTV6XhHqtPrOGeN6FES8-8XYZx6icIOgWxcl8IVA59gwprTqifNZQ");
+console.log("asdasd");
+const createLesson: createLessonInterface = {
+  accessToken: holeclient.accessToken,
   lesson: {
     domain: "https://rabbit.tech/",
     name: "rabbit-r1-buy-automation",
     description: "automatically order yourself a 2nd r1"
   }
-})
-await holeClient.deleteConnectionStorage({
-  accessToken: holeClient.accessToken, 
-  appId: "appId"
-});
-await holeClient.deleteLesson({
-  accessToken: accessToken, 
-  lessonId: "test-twitter"
-})
-await holeClient.devResetUser({
-  accessToken: ""
-})
-await holeClient.fetchDeviceState();
-await holeClient.fetchSessionState();
-await holeClient.fetchUserConnectionState();
-await holeClient.fetchUserExpediaBookingEntries();
-await holeClient.fetchUserExpediaBookingEntry("id");
-await holeClient.setDeviceLost({
-  accessToken: accessToken, 
-  deviceLost: true, 
-  message: "hlep" //optional
-});
-await holeClient.unlinkDevice();
-await holeClient.updateJournalEntry({
-  accessToken: accessToken, 
-  entryId: "id", 
-  deleteEntry: false, //optional
-  newTextContent: "doesn't work" //optional
-})
-await holeClient.updateLesson({
-  accessToken: accessToken, 
-  lessonId: "test-twitter", 
-  lesson: {
-    name: "name", //optional 
-    description: "description" //optional
-  }
-})*/
+}
+//holeclient.createLesson(createLesson).then(response => response.text()).then(data => console.log(data))
+holeclient.fetchUserProfile().then(response => response.text()).then(data => console.log(data));
+
+/*  const updatedProfile = await holeclient.updateUserProfile({ 
+    accessToken: holeclient.accessToken, 
+    profile: { //everything here is optional 
+      name: "uh-number-one", 
+      assistantName: "assistantName", 
+      assistantVoice: "default", 
+      email: "yourmail@mail.com", 
+      locations: [{ //only street2 in a location is optional
+        name: "house", 
+        address: {
+          street: "some random street", 
+          street2: "another street", //optional
+          country: "Poland", 
+          city: "City", 
+          state: "Slaskie", 
+          zip: "03-100" } 
+      }], 
+      dietaryPreferences: {
+        restrictions: "pinaple", 
+        preferences: "chese" 
+      }
+    }
+    })*/
+/*  await holeclient.addOrUpdateLocation({
+    accessToken: holeclient.accessToken, 
+    location: {
+      name: "house", 
+      address: {
+        street: "some random street TWO!", 
+        street2: "another street", //optional
+        country: "Poland", 
+        city: "City", 
+        state: "Slaskie", 
+        zip: "03-100"
+      }
+    },
+    deleteLocationName: "house"
+  })
+  await holeclient.createLesson({
+    accessToken: holeclient.accessToken,
+    lesson: {
+      domain: "https://rabbit.tech/",
+      name: "rabbit-r1-buy-automation",
+      description: "automatically order yourself a 2nd r1"
+    }
+  })
+
+  await holeclient.deleteConnectionStorage({
+    accessToken: holeclient.accessToken, 
+    appId: "appId"
+  });
+
+  await holeclient.deleteLesson({
+    accessToken: holeclient.accessToken, 
+    lessonId: "test-twitter"
+  })
+
+  await holeclient.devResetUser({
+    accessToken: ""
+  })
+  await holeclient.fetchDeviceState();
+  await holeclient.fetchSessionState();
+  await holeclient.fetchUserConnectionState();
+  await holeclient.fetchUserExpediaBookingEntries();
+  await holeclient.fetchUserExpediaBookingEntry("id");
+
+  await holeclient.setDeviceLost({
+    accessToken: holeclient.accessToken, 
+    deviceLost: true, 
+    message: "hlep" //optional
+  });
+  await holeclient.unlinkDevice();
+
+  await holeclient.updateJournalEntry({
+    accessToken: holeclient.accessToken, 
+    entryId: "id", 
+    deleteEntry: false, //optional
+    newTextContent: "doesn't work" //optional
+  })
+
+  await holeclient.updateLesson({
+    accessToken: holeclient.accessToken, 
+    lessonId: "test-twitter", 
+    lesson: {
+      name: "name", //optional 
+      description: "description" //optional
+    }
+  })*/
