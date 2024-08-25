@@ -5,6 +5,7 @@ class rabbitHoleClient {
   async rabbitGetRequest(url) {
     return await fetch(url, {
       "headers": {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
         "accept": "*/*",
         "accept-language": "en-US,en;q=0.9",
         "cache-control": "no-cache",
@@ -16,8 +17,6 @@ class rabbitHoleClient {
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
         "sec-fetch-site": "same-origin",
-        "Referer": "https://hole.rabbit.tech/teach-mode/lessons/test-twitter/record",
-        "Referrer-Policy": "strict-origin-when-cross-origin"
       },
       "body": null,
       "method": "GET"
@@ -26,6 +25,7 @@ class rabbitHoleClient {
   async rabbitPostRequest(url, payload) {
     return await fetch(url, {
       "headers": {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
         "accept": "*/*",
         "accept-language": "en-US,en;q=0.9",
         "cache-control": "no-cache",
@@ -38,8 +38,6 @@ class rabbitHoleClient {
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
         "sec-fetch-site": "same-origin",
-        "Referer": "https://hole.rabbit.tech/teach-mode/lessons/test-twitter/record",
-        "Referrer-Policy": "strict-origin-when-cross-origin"
       },
       "body": JSON.stringify(payload),
       "method": "POST"
@@ -83,6 +81,7 @@ class rabbitHoleClient {
   async updateUserProfile(payload) {
     return await fetch("https://hole.rabbit.tech/apis/updateUserProfile", {
       "headers": {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
         "accept": "*/*",
         "accept-language": "en-US,en;q=0.9",
         "cache-control": "no-cache",
@@ -95,8 +94,6 @@ class rabbitHoleClient {
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
         "sec-fetch-site": "same-origin",
-        "Referer": "https://hole.rabbit.tech/teach-mode/lessons/test-twitter/record",
-        "Referrer-Policy": "strict-origin-when-cross-origin"
       },
       "body": JSON.stringify(payload),
       "method": "PATCH"
@@ -169,6 +166,11 @@ class rabbitHoleClient {
 }
 
 const holeClient = new rabbitHoleClient("accessToken");
+const response = await holeClient.deleteLesson({
+  accessToken: holeClient.accessToken, 
+  lessonId: "test-twitter"
+})
+console.log(await response.text())
 /*const updatedProfile = await holeClient.updateUserProfile({ 
   accessToken: holeClient.accessToken, 
   profile: { //everything here is optional 

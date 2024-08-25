@@ -77,7 +77,7 @@ class rabbitHoleClient {
   async rabbitGetRequest(url: string) {
     return await fetch(url, {
       "headers": {
-        "accept": "*/*",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
         "accept-language": "en-US,en;q=0.9",
         "cache-control": "no-cache",
         "pragma": "no-cache",
@@ -98,6 +98,7 @@ class rabbitHoleClient {
   async rabbitPostRequest(url: string, payload: object) {
     return await fetch(url, {
       "headers": {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
         "accept": "*/*",
         "accept-language": "en-US,en;q=0.9",
         "cache-control": "no-cache",
@@ -138,7 +139,6 @@ class rabbitHoleClient {
     return await this.rabbitGetRequest(`https://hole.rabbit.tech/apis/fetchUserLessons?accessToken=${this.accessToken}`);
   }
   async fetchUserProfile() {
-    //this only returns the username afaik lol
     return await this.rabbitGetRequest(`https://hole.rabbit.tech/apis/fetchUserProfile?accessToken=${this.accessToken}`);
   }
 
@@ -155,6 +155,7 @@ class rabbitHoleClient {
   async updateUserProfile(payload: updateUserProfileInterface) {
     return await fetch("https://hole.rabbit.tech/apis/updateUserProfile", {
       "headers": {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
         "accept": "*/*",
         "accept-language": "en-US,en;q=0.9",
         "cache-control": "no-cache",
@@ -240,18 +241,10 @@ class rabbitHoleClient {
   }
 }
 
-const holeclient = new rabbitHoleClient("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImJiOXBBQ2xqeG5JVVBIOHVIYnRZMSJ9.eyJlbWFpbCI6ImZyYW5la3J5bmtpZXdpY3ora3lzQGdtYWlsLmNvbSIsImFwcF9tZXRhZGF0YSI6e30sInJhYmJpdF9yb2xlcyI6W10sImlzcyI6Imh0dHBzOi8vbG9naW4ucmFiYml0LnRlY2gvIiwic3ViIjoiYXV0aDB8NjYzNjc0MDI0YzhmZGZjZDE1NTMyYTkyIiwiYXVkIjpbImh0dHBzOi8vcmFiYml0LnRlY2giLCJodHRwczovL3JhYmJpdC1wcm9kLnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3MjQ0MzY0MzgsImV4cCI6MTcyNDUyMjgzOCwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsImF6cCI6IlhhdUNFNUphTjlwbUNjREg4OTNJMjAxWm5MMzVsVHVyIn0.mehUB1QoLh2q80vEXAbeiIjCUk7hf1QzHfGxT0Qu5AUXbFLY_NlCHQmbi8BtVRkL6ZQR0wxm321TjGugRsiq_y7fcX6k2Z3qpqTZh5suYU1Ry1M2ZylCGdRCF1Vc8qkTFh_iFA-ZBP44UPqba2b_Xr2QbY0RCaU9Zuhn21YbwVWH--z-MJzK-z7lzHLNN0K1xgNECD-zKaVgyBgWIrZvoyCmi47DaU9qYUpzzYGIVGpZ72oYwG91TtQGsbPt6pINqmpZC5Z9oTUWZq-j5M-BeOxl4Owxpu8y5tTV6XhHqtPrOGeN6FES8-8XYZx6icIOgWxcl8IVA59gwprTqifNZQ");
-console.log("asdasd");
-const createLesson: createLessonInterface = {
-  accessToken: holeclient.accessToken,
-  lesson: {
-    domain: "https://rabbit.tech/",
-    name: "rabbit-r1-buy-automation",
-    description: "automatically order yourself a 2nd r1"
-  }
-}
-//holeclient.createLesson(createLesson).then(response => response.text()).then(data => console.log(data))
-holeclient.fetchUserProfile().then(response => response.text()).then(data => console.log(data));
+const holeclient = new rabbitHoleClient("accessToken");
+
+const response = await holeclient.devResetUser({accessToken: holeclient.accessToken});
+console.log(await response.text());
 
 /*  const updatedProfile = await holeclient.updateUserProfile({ 
     accessToken: holeclient.accessToken, 
